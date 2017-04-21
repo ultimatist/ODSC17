@@ -1,6 +1,8 @@
 # ODSC17
 https://www.odsc.com/boston
 
+## Time Series Modeling with Python
+
 To clone this repository locally:
 
 ```bash
