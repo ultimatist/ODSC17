@@ -1,7 +1,7 @@
 # ODSC17
 https://www.odsc.com/boston
 
-## Time Series Modeling with Python
+## FORTUNE-TELLING WITH PYTHON: AN INTRO TO TIME SERIES MODELING
 
 To clone this repository locally:
 
