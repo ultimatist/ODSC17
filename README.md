@@ -15,4 +15,4 @@ pip install --pre statsmodels --upgrade
 ```
 
 
-[Apache License](./LICENSE)
+[Apache Licensed](./LICENSE) by [Jonathan Balaban](https://www.linkedin.com/in/jbalaban/)
