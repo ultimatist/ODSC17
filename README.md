@@ -13,3 +13,6 @@ Make sure you have Anaconda 3.5 installed, plus the following packages:
 ```bash
 pip install --pre statsmodels --upgrade
 ```
+
+
+[Apache License](./LICENSE)
