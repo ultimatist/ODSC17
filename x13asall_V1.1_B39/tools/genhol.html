@@ -1,0 +1,809 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ 
+<head>
+<title>GENHOL - a utility that generates user-defined moving holiday regressors </title>
+ 
+<meta name="keywords" content="seasonal adjustment, X-12-ARIMA, regARIMA modeling" />
+
+<meta name="DC.title" content="GENHOL - a utility that generates user-defined moving holiday regressors" />
+<meta name="DC.description"
+      content="Documentation for GENHOL Version 1.0 Build 4, a utility that generates user-defined moving holiday regressors for use with X-12-ARIMA" />
+<meta name="DC.creator" content="Time Series Research Staff, SRD, U. S. Census Bureau " />
+<meta name="DC.date.created" scheme="ISO8601" content="2009-07-24" />
+<meta name="DC.date.reviewed" scheme="ISO8601" content="2009-07-24" />
+<meta name="DC.language" scheme="DCTERMS.RFC1766" content="EN-US" />
+
+<meta name="author" content="Brian C. Monsell, Statistical Research Division" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<style type="text/css">
+/*<![CDATA[*/
+  p,h3,h4  { font-family: Arial, Helvetica, sans-serif; margin-left : 5%; margin-right : 5%;}
+  ul,h2 { font-family: Arial, Helvetica, sans-serif; margin-left : 7.5%; margin-right : 7.5%;}
+  { font-family: Arial, Helvetica, sans-serif;   margin-left : 5%;  margin-right : 5%; }
+  .indent {  margin-left : 7.5%;  margin-right : 7.5%;  }
+  .bold {   font-weight: bold;   }
+  .center { text-align : center; }
+  .left {   text-align: left;    }
+  pre { font-family: "Courier New" Courier monospace;
+        margin-left : 5%; margin-right : 5%;}
+  .tt{ font-family: "Courier New" Courier monospace; }
+  .ttindent { font-family: "Courier New" Courier monospace;
+        margin-left : 7.5%;  margin-right : 7.5%;  }
+  .ttcenter { font-family: "Courier New" Courier monospace;
+        text-align : center; }
+  table { font-family: Arial, Helvetica, sans-serif;
+    border-width: thin thin thin thin;
+    border-spacing: 0px;
+    border-style: outset outset outset outset;
+    border-color: black black black black;
+    border-collapse: collapse;
+    background-color: white;
+  }
+  th { font-family: Arial, Helvetica, sans-serif;
+    border-width: thin thin thin thin;
+    padding: 6px 6px 6px 6px;
+    border-style: inset inset inset inset;
+    border-color: gray gray gray gray;
+    background-color: white;
+  }
+  td { font-family: Arial, Helvetica, sans-serif;
+    border-width: thin thin thin thin;
+    padding: 6px 6px 6px 6px;
+    border-style: inset inset inset inset;
+    border-color: gray gray gray gray;
+    background-color: white;
+    text-align: left;
+  }
+  .w80 {  margin-left : 10%;  margin-right : 10%;  width : 80%  }
+/*]]>*/
+</style>
+<link rel="stylesheet" href="/main/.in/style.css" type="text/css" />
+
+</head>
+ 
+<body>
+<h2 id="top" class="center">GENHOL - a utility that generates user-defined moving holiday regressors for X-12-ARIMA</h2>
+
+<p class="center">Brian Monsell<br />
+U. S. Census Bureau<br />
+August 28, 2009</p>
+
+<ul>
+<li><a href="#run">Running <span class="tt">genhol</span></a></li>
+
+<li><a href="#center">Notes on centering holiday regressors</a></li>
+
+<li><a href="#examples">Examples</a>
+<ul>
+<li><a href="#easter">Generating an Easter holiday regressor</a></li>
+<li><a href="#easter2">Generating a 2-part Easter holiday regressor</a></li>
+<li><a href="#easterstock">Generating a stock Easter holiday regressor</a></li>
+<li><a href="#holiday2">Generating a set of regressors for more than one holiday</a></li>
+</ul>
+</li>
+
+<li><a href="#download">Downloads</a></li>
+
+<li><a href="#support">Support</a></li>
+
+<li><a href="#references">References</a></li>
+
+</ul>
+
+<hr width="95%" style="text-align: center;" />
+
+
+    <p>The <span class="tt">genhol</span> utility creates holiday regressors
+    using the same procedure as X-12-ARIMA uses to create regressors for the
+    U. S. holidays of Easter, Labor Day, and Thanksgiving.  Separate regressors 
+    can be generated for the effect in intervals before and after-holidays,
+    as well as an intermediate effect around the holiday.  More than one
+    holiday can be specified, and the user can center these regressors using
+    either their overall means or their calendar-month means (calendar-quarter
+    means in the case of regressors for modeling quarterly data or calendar-bimonthly
+    means in the case of regressors for modeling bimonthly data).</p>
+
+    <p>X-12-ARIMA commands can be generated to allow the user to easily use these
+    regressors in a regARIMA model for an X-12-ARIMA run.
+    For more details on specific options for user-defined regressors,
+    go to the section on the <span class="tt">regression</span> spec in
+    U. S. Census (2007).</p>
+
+    <p>Holiday effects for flow and stock time series can be generated with this software.</p>
+    
+    <p>Files for some holidays are available from this website at the download
+    section of this page. For holidays whose dates are not available,
+    the user must supply an ASCII (text) file of dates.</p>
+          
+
+<h3><a id="run" name="run">Running <span class="tt">genhol</span></a></h3>
+
+    <p>To run <span class="tt">genhol</span>, enter the following command in a (DOS) command prompt:</p>
+
+    <p class="ttindent">genhol infile</p>
+
+    <p>where <span class="tt">infile</span> is a file that contains options
+    for <span class="tt">genhol</span>.  The general syntax of this file
+    is similar to that of X-12-ARIMA's input specification file, see below:</p>
+
+<pre>
+    spec1{
+        argument = value
+    }
+    spec2{
+        argument = value
+    }
+</pre>
+
+    <p>There are two types of "specs": a <span class="tt">global</span>
+    spec (to specify global options)
+    and <span class="tt">holiday</span> specs
+    (to specify options for each of the holidays for which 
+    user-defined regressors are to be generated).  The global spec should 
+    appear first in the input file.</p>
+
+    <p>Documentation for the arguments that can be specified in the global spec 
+    is given below.</p>
+
+
+<table class="w80">
+<caption class="w80"><strong>Possible arguments for the global spec</strong></caption>
+<tr>
+<th scope="col">Argument</th><th scope="col">Description</th>
+</tr>
+<tr>
+<td class="ttcenter">    numhol = n</td>
+<td>Denotes the number of separate holidays to be specified by the user later in this file.
+The default is <span class="tt">1</span>.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    outfile = name   </td>
+<td>Filename (with extension) where the holiday regression variables will be stored.
+This argument must be specified; there is no default.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    outspec = name   </td>
+<td>Filename (with extension) where a regression spec will be stored
+that uses the user-defined regression variables generated by this program.
+If not specified, this file will not be generated.
+
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    first = nnnn     </td>
+<td>Denotes the first year that will be saved in the output file.
+The default is the first year common to all the data files specified
+by the <span class="tt">infile</span> argument of subsequent holiday specs.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    last = nnnn      </td>
+<td>Denotes the last year that will be saved in the output file.
+The default is the final year common to all the data files specified
+by the <span class="tt">infile</span> argument of subsequent holiday specs.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    firstmean = nnnn </td>
+<td>Denotes the first year used in the calculation of the means of the holiday regressors.
+The default is the first year common to all the data files specified by 
+the <span class="tt">infile</span> argument of subsequent holiday specs.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    lastmean = nnnn  </td>
+<td>Denotes the last year used in the calculation of the means of the holiday regressors.
+The default is the final year common to all the data files specified by 
+the <span class="tt">infile</span> argument of subsequent holiday specs.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    period = n       </td>
+<td>Denotes the seasonal period assumed for the holiday regression variables being
+generated and stored.
+Only three values are allowed for this argument :
+<span class="tt">period=12</span> (to generate regressors for monthly time series),
+<span class="tt">period=6</span> (to generate regressors for bimonthly series), and
+<span class="tt">period=4</span> (to generate regressors for quarterly series).
+The default is <span class="tt">12</span>.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    type = string       </td>
+<td>Denotes the type of variable that will be produced.
+If <span class="tt">type = count</span>, the count of the number of days
+found in the holiday window for a given observation is output.
+If <span class="tt">type = ratio</span>, the ratio of the number of days
+in the holiday window for a given observation is output.
+The default is <span class="tt">type = ratio</span>.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    stockday = n       </td>
+<td>Denotes the stock day for an inventory series, that is,
+the day when inventory is taken for a given month.  This can only
+be specified for monthly series, and can only take the values of 1 to 31
+(ie, 1 &le; <span class="tt">stockday</span> &le; 31).
+An end-of-month inventory regressor is generated when <span class="tt">stockday = 31</span>. 
+The default is to assume that the holiday generated will be for a flow series
+rathen than an inventory series.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    usergroup = string       </td>
+<td>Determines whether user-defined regression groups will be specified
+in the <span class="tt">regression</span> spec stored in <span class="tt">outspec</span>. 
+If <span class="tt">usergroup = yes</span>, the regressors generated for
+each holiday will be put in separate user-defined regression groups.
+This can only be specified if more than one holiday is specified
+(ie, <span class="tt">numhol</span> > 0).
+If <span class="tt">usergroup = no</span>, no user-defined regression
+groups will be specified.  
+The default is <span class="tt">usergroup = no</span>.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">    chi2test = string       </td>
+<td>Determines whether a chi-squared test of the user-defined regression groups
+will be specified in the <span class="tt">regression</span> spec stored in <span class="tt">outspec</span>. 
+If <span class="tt">chi2test = yes</span>, a chi-squared test of the user-defined regression groups
+will be specified in the <span class="tt">regression</span> spec stored in <span class="tt">outspec</span>.
+This can only be specified if more than one holiday is specified
+(ie, <span class="tt">numhol</span> > 0) and if <span class="tt">usergroup = yes</span>.
+If <span class="tt">usergroup = no</span>, no user-defined regression
+groups will be specified.  
+The default is <span class="tt">usergroup = no</span>.
+</td>
+</tr>
+</table>
+
+<p>Note that the file specified in <span class="tt">outfile</span> is where the
+regression variables will be stored;
+the file specified in <span class="tt">outspec</span> is where arguments for
+the X-12-ARIMA <span class="tt">regression</span> spec will be stored that can
+read and process the regression variables stored in <span class="tt">outfile</span>.</p>
+
+
+    <p>After the <span class="tt">global</span> spec, there should be
+    as many <span class="tt">holiday</span> specs as
+    specified in the <span class="tt">numhol</span> argument
+    of the <span class="tt">global</span> spec.
+    These specs should be numbered (ie, <span class="tt">holiday1</span>,
+    <span class="tt">holiday2</span>, etc.).</p>
+
+    <p>The arguments for the <span class="tt">holiday</span> specs are given below.</p>
+ 
+<table class="w80">
+<caption class="w80">
+<strong>Possible arguments for the <span class="tt">holiday</span> spec(s)</strong>
+</caption>
+<tr>
+<th scope="col">Argument</th><th scope="col">Description</th>
+</tr>
+<tr>
+<td class="ttcenter">    name = string</td>
+<td>Name of the holiday.  This name should not have
+any spaces (this name will be used in the regression
+spec generated by the program to distinguish between
+different holiday regressors).  Default is the spec
+file name (<span class="tt">holiday1</span>,
+<span class="tt">holiday2</span>, etc.).
+</td>
+</tr>
+<tr>
+<td class="ttcenter">        infile = name    </td>
+<td>Specifies the filename (with extension) where the 
+holiday dates used to generate the holiday regressors 
+are stored.  Each date consists of a month, day, and 
+four digit year separated by white space or tabs
+(example: <span class="tt">1 1 1990</span> for January 1, 1990),
+and each date should appear on its own line.
+This is a required entry.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">        begbefore = n    </td>
+<td>Denotes the position relative to the holiday of 
+the beginning of the window used to generate the before-holiday regressor.
+This value should be negative, and less than or equal to
+the value for the <span class="tt">endbefore</span> argument.  
+The minimum value that can be specified is <span class="tt">-42</span>.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">        endbefore = n    </td>
+<td>Denotes the position relative to the holiday of the
+end of the window used to generate the before-holiday regressor.
+This value should be negative.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">        begafter = n     </td>
+<td>Denotes the position relative to the holiday of the beginning of the window
+used to generate the after-holiday regressor.
+Since this effect occurs after the holiday, the value should be non-negative.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">        endafter = n     </td>
+<td>Denotes the position relative to the holiday of the end of the window
+used to generate the after-holiday regressor.
+This value should be positive, and greater than or equal to the value for the
+<span class="tt">begafter</span> argument.  
+The maximum value that can be specified is <span class="tt">49</span>.
+</td>
+</tr>
+<tr>
+<td class="ttcenter">        center = string  </td>
+<td>Specifies the removal of the (sample) mean or the 
+seasonal means from the user-defined regression variables.
+If <span class="tt">center = mean</span>, the mean of the 
+user-defined holiday regressor is subtracted from the 
+regressor.  If <span class="tt">center = calendar</span>,
+means for each calendar month (or quarter or bimonth)
+are subtracted from each of the user-defined holiday regressors.  
+If this argument is not specified, the user-defined 
+regressors are not modified.
+</td>
+</tr>
+</table>
+
+<p>In general, here are some guidelines for choosing which options to specify,
+depending on the type of effect you wish to estimate.</p>
+
+<ul>
+    <li>To specify a regressor to estimate an effect before a holiday,
+    the user must specify both the <span class="tt">begbefore</span> and
+    <span class="tt">endbefore</span> arguments of the
+    <span class="tt">holiday</span> spec.</li>
+    
+    <li>In general, -42 &le; <span class="tt">begbefore</span> &le;
+    <span class="tt">endbefore</span> &lt; 0. </li>
+
+    <li>To specify a regressor to estimate an effect after a holiday,
+    the user must specify both the <span class="tt">begafter</span>
+    and <span class="tt">endafter</span> arguments.</li>
+    
+    <li>In general, 0 &lt; <span class="tt">begafter</span> &le;
+    <span class="tt">endafter</span> &le; 49. </li>
+
+    <li>An interim regressor, using a window around a given holiday, will
+    also be generated when the user specifies values for both the 
+    <span class="tt">endbefore</span> and <span class="tt">begafter</span>
+    arguments.  This effect will use a window that starts one position
+    after the position given by <span class="tt">endbefore</span> 
+    and ends one position before the position given by <span class="tt">begafter</span>.  
+    There must be at least two observations in this window for the 
+    interim effect regressor to be generated.</li>
+
+    <li>If only the interim regressor is desired, the user should specify
+    just the <span class="tt">begafter</span> and <span class="tt">endbefore</span>
+    arguments.</li>
+
+</ul>
+
+<br />
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<hr width="95%" style="text-align: center;" />
+
+<h3><a id="center" name="center">Notes on centering holiday regressors</a></h3>
+
+    <p>For simplicity, only regressors for monthly data are discussed. The 
+    quarterly and bimonthly cases are analogous. </p>
+
+    <p>Before centering, each regressor is a 
+    proportionality regressor whose value in any month is the proportion 
+    of the days of the specified interval that belong to the month. 
+    For example, if the interval is 10 days long and, in a certain year, 
+    the first two days of the interval fall in January, then the value of 
+    the uncentered regressor is 2/10 in January and 8/10 in February that 
+    year. Its value in March-December is 0.</p>
+
+    <p>Centering of the regressors is done to keep the yearly totals of
+    the series obtained by removing 
+    the estimated holiday effects approximately equal to the yearly totals 
+    of the unadjusted data.  If centering is not done, these two totals 
+    will differ by approximately the same amount each year, and user will
+    conclude that combined seasonal and holiday adjustment is producing
+    a biased estimate of the level of the observed series. (The bias is
+    a crude estimate of what the data would be like if there were no
+    holiday.) The type of holiday effect determines the type of centering.</p> 
+
+    <p>Centering by removing the calendar-month means is appropriate for 
+    holidays like Easter or the Chinese New Year whose regressors are 
+    always zero in some calendar months because the holiday can occur   
+    only in a few calendar months. The calendar-month-centered regressors 
+    will be zero in exactly the same months as the regressor, and no 
+    adjustment will be done to data from these months. Also, holiday adjustment
+    does remove fixed seasonal, with the result that all such effects are
+    included in the seasonal factors produced by the seasonal adjustment
+    procedure.</p>
+
+    <p>Centering by removing the overall mean is attractive for holiday 
+    periods like Ramadan that move through all of the calender months 
+    over time. With mean centering, the centered regressor's adjustment 
+    for every month outside the specified interval in a given year always 
+    has the same value and adjustment for the holiday effect has a usually
+    negligible effect on the general level of the series.</p>
+
+<br />
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<hr width="95%" style="text-align: center;" />
+
+<h3><a id="examples" name="examples">Examples</a></h3>
+
+<h4><a id="easter" name="easter">Generating an Easter holiday regressor</a></h4>
+
+    <p>This example will create a file containing user-defined regressors
+    for Easter.  This file will have values very close to those of the default
+    regressor generated by X-12-ARIMA for Easter with a window length of 8
+    (<span class="tt">easter[8]</span>).
+    A sample input file (<span class="tt">easter8.inp</span>) is given below:</p>
+
+<pre>
+global{
+    numhol = 1
+    outfile = "easter8.dat"
+    outspec = "easter8.reg"
+    first = 1990
+    last = 2015
+    period = 12
+}
+holiday1{
+    name = easter8
+    begbefore = -8
+    endbefore = -1
+    infile = "easter500.txt"
+    center = calendar
+}
+</pre>
+
+    <p>Note that the dates of Easter holiday is provided in the file
+    <span class="tt">easter500.txt</span>.
+    The first 15 lines of the file are given below:</p>
+
+<pre>
+  4    2    1600
+  4   22    1601
+  4    7    1602
+  3   30    1603
+  4   18    1604
+  4   10    1605
+  3   26    1606
+  4   15    1607
+  4    6    1608
+  4   19    1609
+  4   11    1610
+  4    3    1611
+  4   22    1612
+  4    7    1613
+  3   30    1614
+  4   19    1615
+</pre>
+
+<p>To run this file, enter</p>
+
+<p class="ttindent">genhol easter8.inp</p>
+
+    <p>This will generate one holiday regressor for the Easter holiday,
+    stored in <span class="tt">easter8.dat</span>.
+    The regression variable is stored in X-12-ARIMA's <span class="tt">datevalue</span> format;
+    the first 18 lines of the file are given below:</p>
+
+<pre>
+ 1990 1  0.0  
+ 1990 2  0.0  
+ 1990 3  -0.382  
+ 1990 4  0.382  
+ 1990 5  0.0  
+ 1990 6  0.0  
+ 1990 7  0.0  
+ 1990 8  0.0  
+ 1990 9  0.0  
+ 1990 10  0.0  
+ 1990 11  0.0  
+ 1990 12  0.0  
+ 1991 1  0.0  
+ 1991 2  0.0  
+ 1991 3  0.618  
+ 1991 4  -0.618  
+ 1991 5  0.0  
+ 1991 6  0.0  
+</pre>
+    
+    <p>X-12-ARIMA commands to incorporate these regressors into
+    a regARIMA model will also be stored into a file named
+    <span class="tt">easter8.reg</span>.  The contents of this file
+    are given below:</p>
+
+<pre>
+regression{
+   user=(
+    Beforeeaster8 
+   )
+   file="easter8_500.dat"
+   format="datevalue"
+   start=1980.1
+   usertype=holiday
+}
+</pre>
+
+    
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<h4><a id="easter2" name="easter2">Generating a 2-part Easter holiday regressor</a></h4>
+
+<p>Zhang, McLaren, and Leung (2003) developed an alternate Easter
+regressor for Australian series at the Australian Bureau of Statistics (henceforth ABS).
+Their model consisted of two regressors, 
+one which modeled an assumed increase in the level of the series before Good Friday,
+and another to handle the period between Good Friday and Easter
+Monday, a national holiday in Australia, where a decrease in level is expected.</p>
+
+<p>This example will show how to create user-defined regressors for the 
+   ABS Easter regressor.  A sample input file (<span class="tt">abseaster.inp</span>)
+   is given below:</p> 
+
+<pre>
+global{
+    numhol = 1
+    outfile = "abseaster.dat"
+    outspec = "abseaster.reg"
+    first = 1990
+    last = 2015
+    period = 12
+}
+holiday1{
+    name = abseaster
+    begbefore = -8
+    endbefore = -3
+    begafter = 2
+    infile = "easter500.txt"
+    center = calendar
+}
+</pre>
+
+<p>To run this file, enter</p>
+
+<p class="ttindent">genhol indhol.inp</p>
+
+    <p>This will generate two (2) holiday regressors in the file
+    <span class="tt">abseaster.dat</span> - a regressor for the
+    period before Good Friday, and another regressor for the period between
+    Good Friday and Easter Monday, inclusive.</p>
+
+    <p>X-12-ARIMA commands to incorporate these regressors into
+    a regARIMA model will also be stored as a file named
+    <span class="tt">abseaster.reg</span>.  The contents of this file
+    are given below:</p>
+
+<pre>
+regression{
+   user=(
+    Beforeabseaster    Betweenabseaster 
+   )
+   file="abseaster.dat"
+   format="datevalue"
+   start=1990.1
+   usertype=holiday
+}
+</pre>
+
+    
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<h4><a id="easterstock" name="easterstock">Generating a stock Easter holiday regressor</a></h4>
+
+<p>This utility uses the method outlined in Findley (2009) to generate stock holiday
+regressors.  To generate an end-of-month stock Easter regressor approximately like that
+specified in X-13ARIMA-SEATS as <span class="tt">easterstock[8]</span>
+(see Monsell (2009) for more details), an input file like the following is needed:</p>
+
+<pre>
+global{
+    numhol = 1
+    outfile = "stockeaster8.dat"
+    outspec = "stockeaster8.reg"
+    first = 1990
+    last = 2015
+    period = 12
+    stockday = 31
+}
+holiday1{
+    name = stockeaster8
+    begbefore = -8
+    endbefore = -1
+    infile = "easter500.txt"
+    center = calendar
+}
+</pre>
+
+<p>To generate a stock Easter regressor for another sample day,
+such as the 28th day of the month,
+an input file like the following is needed:</p>
+
+<pre>
+global{
+    numhol = 1
+    outfile = "stockeaster8d28.dat"
+    outspec = "stockeaster8d28.reg"
+    first = 1990
+    last = 2015
+    period = 12
+    stockday = 28
+}
+holiday1{
+    name = stockeaster8d28
+    begbefore = -8
+    endbefore = -1
+    infile = "easter500.txt"
+    center = calendar
+}
+</pre>
+
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<h4><a id="holiday2" name="holiday2">Generating a set of regressors for more than one holiday</a></h4>
+
+    <p>This example will create a file containing user-defined regressors
+    for Chinese New Year and Idul Fitri, an Islamic holiday that marks
+    the end of Ramadan.
+    A sample input file (<span class="tt">indhol.inp</span>) is given below:</p>
+
+<pre>
+global{
+    numhol = 2
+    outfile = "indhol.dat"
+    outspec = "indhol.reg"
+    usergroup = yes
+    chi2test = yes
+}
+holiday1{
+    name = CNY
+    begbefore = -10
+    endbefore = -1
+    begafter = 5
+    endafter = 14
+    infile = "cnyInd.dat"
+    center = calendar
+}
+holiday2{
+    name = IdulFitri
+    begbefore = -42
+    endbefore = -21
+    begafter = 1
+    endafter = 7
+    infile = "IFHolInd.dat"
+    center = mean
+}
+</pre>
+
+<p>To run this file, enter</p>
+
+<p class="ttindent">genhol indhol.inp</p>
+
+    <p>This will generate six (6) holiday regressors in the file
+    <span class="tt">indhol.reg</span> - three Chinese New 
+    Year regressors (for before, after and intermediate holiday effects), 
+    and Idul Fitri regressors (for before, after and intermediate holiday
+    effects).  X-12-ARIMA commands to incorporate these regressors into
+    a regARIMA model will be stored as a file named
+    <span class="tt">indhol.reg</span>.
+    The contents of this file are given below:</p>
+    
+<pre>
+regression{
+   user=(
+    BeforeCNY    BetweenCNY    AfterCNY 
+    BeforeIdulFitri    BetweenIdulFitri    AfterIdulFitri 
+   )
+   file="indhol.dat"
+   format="datevalue"
+   start=1970.1
+   usertype=(
+    holiday     holiday     holiday 
+    holiday2    holiday2    holiday2 
+   )
+   chi2test=yes
+}
+</pre>
+
+<br />
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<hr width="95%" style="text-align: center;" />
+
+<h3><a id="download" name="download">Downloads</a></h3>
+
+<p>The following files are available for downloading at this time:</p>
+
+<p><a href="../../../ts/x12a/final/pc/genhol.exe"><strong>genhol.exe</strong></a><br />
+A DOS program that generates user-defined holiday
+regressors for use with the X-12-ARIMA program.
+<strong>(about 272K)</strong><br />
+<br />Last update: April 2, 2009</p>
+
+<p><a href="easter500.txt"><strong>easter500.txt</strong></a><br />
+An ASCII text file with the dates of Easter for the 500 year period
+from 1600 to 2099.</p>
+
+<p>NOTE: This program was written with the Icon programming language, 
+with special routines provided by the Icon program library.  
+For more information on Icon, see Griswold and Griswold (1996). </p>
+    
+<p>The source code for this program is available upon request
+to the person listed under <strong>Support</strong>.</p>
+
+
+<br />
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<hr width="95%" style="text-align: center;" />
+
+<h3><a id="support" name="support">Support</a></h3>
+
+<p>Contact Brian C. Monsell at any one of the following:</p>
+
+<p>
+email: <a href="mailto:&#98;&#114;&#105;&#97;&#110;&#46;&#99;&#46;&#109;&#111;&#110;&#115;&#101;&#108;&#108;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;?subject=Download%20PC%20X-12">&#98;&#114;&#105;&#97;&#110;&#46;&#99;&#46;&#109;&#111;&#110;&#115;&#101;&#108;&#108;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;</a> or
+       <a href="mailto:&#120;&#49;&#50;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;&#63;&#115;&#117;&#98;&#106;&#101;&#99;&#116;&#61;&#88;&#45;&#49;&#50;&#45;&#65;&#82;&#73;&#77;&#65;&#37;&#50;&#48;&#81;&#117;&#101;&#115;&#116;&#105;&#111;&#110;&#115;">&#120;&#49;&#50;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;</a><br /><br />
+
+Phone: 301-763-1721 (or 301-763-1643)<br /><br />
+
+FAX:   301-763-8399
+</p>
+
+<br />
+<p><a href="#top"><strong>Back to the Top</strong></a></p><br />
+
+<hr width="95%" style="text-align: center;" />
+
+<h3><a id="references" name="references">References</a></h3>
+
+<p><B>Error processing SSI file</B><BR>
+
+</p>
+
+<p>Findley, D. F. (2009), <strong>Stock Series Holiday Regressors Generated By Flow Series Holiday Regressors</strong> [PDF],
+Statistical Research Division Research Report Series (Statistics No. 2009-04). U.S. Census Bureau [Online].
+Available: <a href="http://www.census.gov/srd/papers/pdf/rrs2009-04.pdf">http://www.census.gov/srd/papers/pdf/rrs2009-04.pdf </a> [2009, April 30].</p>
+
+<p>Griswold, R. E. and Griswold, M. T. (1996)
+<strong>The Icon Programming Language, Third Edition</strong> 
+Peer-to-Peer Communications [Online]. Available:
+<a href="http://www.cs.arizona.edu/icon/lb3.htm">http://www.cs.arizona.edu/icon/lb3.htm</a> 
+<!--#include virtual='/main/.in/offsite.inc'--> [2009, July 24].</p> 
+
+<p>Monsell, B. C. (2009), <strong>Update on the Development of X-13ARIMA-SEATS</strong>,
+Statistical Research Division Research Report Series (to appear).</p>
+
+<p>U.S. Census Bureau (2007). <strong>X-12-ARIMA Reference Manual, Version 0.3</strong> [PDF]
+U.S. Census Bureau [Online].  Available:
+<a href="http://www.census.gov/ts/x12a/v03/x12adocV03.pdf">http://www.census.gov/ts/x12a/v03/x12adocV03.pdf</a>
+ [2007, November 29].</p>
+
+<p>Zhang, X., McLaren, C. H., and Leung, C. C. S. (2003),
+<strong>An Easter proximity effect: Modelling and adjustment</strong>,
+<em>Australian and New Zealand Journal of Statistics</em>, 43, 269–280.</p>
+
+<p><a href="#top"><strong>Back to the Top</strong></a><br />
+<a href="index.html">Back to X-12-ARIMA Home Page</a></p>
+
+<br />
+<p><!--#include virtual='/main/.in/offsite-footer.inc'--></p>
+
+<div class="footer">
+ <em>Source: U.S. Census Bureau, Statistical Research Divison<br />
+</em>
+ <br />
+
+</div>
+</body>
+</html>

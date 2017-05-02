@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ 
+<head>
+<title>CNVFINAL03 - an X-13ARIMA-SEATS spec file conversion utility</title>
+ 
+<meta name="keywords" content="seasonal adjustment, X-13ARIMA-SEATS, regARIMA modeling" />
+
+<meta name="DC.title" content="CNVX13AS - a utility that converts spec files from X-12-ARIMA 0.3 into spec files for X-13ARIMA-SEATS" />
+<meta name="DC.description"
+      content="Documentation for cnvfinal03, a utility that converts spec files from X-12-ARIMA 0.3 into spec files for X-13ARIMA-SEATS" />
+<meta name="description"
+      content="Documentation for cnvfinal03, a utility that converts spec files from X-12-ARIMA 0.3 into spec files for X-13ARIMA-SEATS" />
+<meta name="DC.creator" content="Time Series Research Staff, CSRM, U. S. Census Bureau " />
+<meta name="DC.date.created" scheme="ISO8601" content="2012-07-12" />
+<meta name="DC.date.reviewed" scheme="ISO8601" content="2012-07-12" />
+<meta name="DC.language" scheme="DCTERMS.RFC1766" content="EN-US" />
+
+<meta name="author" content="Brian C. Monsell, CSRM" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<style type="text/css">
+/*<![CDATA[*/
+  p,ul { font-family: Arial, Helvetica, sans-serif; margin-left : 5%; margin-right : 5%;}
+  h1,h2,h3 { font-family: Arial, Helvetica, sans-serif; }
+  .indent {  margin-left : 7.5%;  margin-right : 7.5%;  }
+  .bold {   font-weight: bold;   }
+  .center { text-align : center; }
+  .left {   text-align: left;    }
+  pre { font-family: "Courier New" Courier monospace;
+/        margin-left : 5%; margin-right : 5%;}
+  .tt{ font-family: "Courier New" Courier monospace; }
+  .ttindent { font-family: "Courier New" Courier monospace;
+        margin-left : 7.5%;  margin-right : 7.5%;  }
+  .ttcenter { font-family: "Courier New" Courier monospace;
+        text-align : center; }
+/*]]>*/
+</style>
+
+</head>
+ 
+<body>
+
+<h2 class="center">CNVX13AS - an X-13ARIMA-SEATS spec file conversion utility</h2>
+
+<h3>Purpose:</h3>
+
+    <p>To convert input specification files from Version 0.3 of
+    X-12-ARIMA to a format compatable with X-13ARIMA-SEATS.</p>
+
+	<p>This utility is a DOS utility - the examples below assume you are
+	running the utility within a DOS command window, and are running
+	the utility in the same directory that the utility is stored in.</p>
+
+
+<h3>Syntax:</h3>
+
+    <p class="tt">cnvx13as oldspec newspec</p>
+
+    <p>where:</p>
+
+    <p class="indent"><span class="tt">oldspec</span>
+	is the filename of an input specification file for Version 0.3 of X-12-ARIMA;</p>
+
+    <p class="indent"><span class="tt">newspec</span>
+	is the filename of a input specification file for 
+    Version 1.0 of X-13ARIMA-SEATS that was formed from the
+    specs and arguments found in oldspec.</p>
+
+
+<h3>Note:</h3>
+
+    <p>CNVX13AS assumes that the input is a valid input specification file
+    for Version 0.3 of X-12-ARIMA; no attempt is made to verify if
+	the contents of the file are in the correct syntax.</p>
+
+    <p>Comments written in the old spec file are transferred to the
+    new, though not in the same position in the file.</p>
+
+    <p>Spec names and spec arguments from the old input file are converted
+    to lower case in the translated input file.</p>  
+
+    <p>This program was written with the Icon programming language, 
+    with special routines provided by the Icon program library.  
+    For more information on Icon, see "The Icon Programming Language, 
+    Third Edition" by Ralph E. Griswold and Madge T. Griswold,
+    published by Peer-to-Peer Communications.</p>
+    
+    <p>The source code for this program is available upon request.</p>
+
+
+<h3>Support:</h3>
+
+<p>Contact Brian C. Monsell at any one of the following:</p>
+
+<p>
+email: <a href="mailto:&#98;&#114;&#105;&#97;&#110;&#46;&#99;&#46;&#109;&#111;&#110;&#115;&#101;&#108;&#108;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;?subject=Download%20PC%20X-12">&#98;&#114;&#105;&#97;&#110;&#46;&#99;&#46;&#109;&#111;&#110;&#115;&#101;&#108;&#108;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;</a> or
+       <a href="mailto:&#120;&#49;&#50;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;&#63;&#115;&#117;&#98;&#106;&#101;&#99;&#116;&#61;&#88;&#45;&#49;&#50;&#45;&#65;&#82;&#73;&#77;&#65;&#37;&#50;&#48;&#81;&#117;&#101;&#115;&#116;&#105;&#111;&#110;&#115;">&#120;&#49;&#50;&#64;&#99;&#101;&#110;&#115;&#117;&#115;&#46;&#103;&#111;&#118;</a><br /><br />
+
+Phone: 301-763-1721 (or 301-763-1649)<br /><br />
+
+FAX:   301-763-8399
+</p>
+
+<p>Revision Date : July 12, 2012</p>
+
+ <em>Source: U.S. Census Bureau, Statistical Research Divison<br />
+</em>
+ <br />
+
+</body>
+</html>
