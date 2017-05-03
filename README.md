@@ -17,11 +17,7 @@ pip install plotly
 
 ```bash
 pip install --pre statsmodels --upgrade
-```
-```bash
 pip install pyflux
-pip install pystan
-pip install fbprophet
 ```
 
 [Apache Licensed](./LICENSE) by [Jonathan Balaban](https://www.linkedin.com/in/jbalaban/)
