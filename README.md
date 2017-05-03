@@ -2,6 +2,7 @@
 https://www.odsc.com/boston
 
 ## FORTUNE-TELLING WITH PYTHON: AN INTRO TO TIME SERIES MODELING
+### github.com/ultimatist/ODSC17
 
 To clone this repository locally:
 
